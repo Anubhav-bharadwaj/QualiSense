@@ -86,6 +86,11 @@ npm run dev
 ```
 *The web application will open at `http://localhost:3000`.*
 
+### Alternative: 1-Click Launch Scripts (`scripts/`)
+If you prefer starting both services together with a single command:
+- **Windows:** Double-click or execute `.\scripts\start_app.bat`
+- **Linux / macOS:** Execute `chmod +x scripts/*.sh && ./scripts/start_app.sh`
+
 ---
 
 ## 4. Key Refinements & Advanced Capabilities
