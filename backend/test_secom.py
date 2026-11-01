@@ -11,10 +11,25 @@ Validates:
 """
 
 import sys
-from backend.database import SessionLocal
-from backend.models import SecomSample, DatasetImport, Batch
-from backend.datasets.secom.service import SecomService
-from backend.datasets.secom.ml_pipeline import SecomPreprocessingPipeline
+import os
+
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+_parent_dir = os.path.dirname(_current_dir)
+if _parent_dir not in sys.path:
+    sys.path.insert(0, _parent_dir)
+if _current_dir not in sys.path:
+    sys.path.insert(0, _current_dir)
+
+try:
+    from backend.database import SessionLocal
+    from backend.models import SecomSample, DatasetImport, Batch
+    from backend.datasets.secom.service import SecomService
+    from backend.datasets.secom.ml_pipeline import SecomPreprocessingPipeline
+except ImportError:
+    from database import SessionLocal
+    from models import SecomSample, DatasetImport, Batch
+    from datasets.secom.service import SecomService
+    from datasets.secom.ml_pipeline import SecomPreprocessingPipeline
 
 def run_tests():
     print("=" * 60)

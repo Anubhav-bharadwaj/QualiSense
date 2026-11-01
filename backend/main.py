@@ -25,7 +25,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
 
 try:
-    from .database import engine, Base, get_db
+    from .database import engine, Base, get_db, SessionLocal
     from .models import (
         User, ProductProfile, ProductionLine, Batch, ProductionReading,
         QualityAlert, Investigation, CorrectiveAction, SustainabilityRecord
@@ -44,7 +44,7 @@ try:
     from .seed_data import seed_database
     from .ml_service import ml_model_service
 except (ImportError, ValueError):
-    from database import engine, Base, get_db
+    from database import engine, Base, get_db, SessionLocal
     from models import (
         User, ProductProfile, ProductionLine, Batch, ProductionReading,
         QualityAlert, Investigation, CorrectiveAction, SustainabilityRecord
@@ -91,10 +91,17 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Enable CORS for local Next.js frontend
+# Enable CORS for local Next.js frontend and production domain
+_cors_origins_env = os.getenv("CORS_ORIGINS")
+_allowed_origins = ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001"]
+if _cors_origins_env:
+    for o in _cors_origins_env.split(","):
+        if o.strip() and o.strip() not in _allowed_origins:
+            _allowed_origins.append(o.strip())
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001"],
+    allow_origins=_allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -109,7 +116,6 @@ app.include_router(auth_router)
 # Startup event: automatically seed if database is empty
 @app.on_event("startup")
 def on_startup():
-    from .database import SessionLocal
     db = SessionLocal()
     try:
         count = db.query(Batch).count()

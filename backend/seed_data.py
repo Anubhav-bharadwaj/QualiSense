@@ -7,6 +7,11 @@ from .models import (
 )
 from .rules import DEFAULT_ILLUSTRATIVE_LIMITS
 
+try:
+    from .auth.security import hash_password
+except ImportError:
+    from backend.auth.security import hash_password
+
 def seed_database(db: Session):
     """Seed comprehensive realistic synthetic demonstration data while strictly preserving SECOM tables."""
     # Create tables if not exist
@@ -24,26 +29,57 @@ def seed_database(db: Session):
     db.query(User).delete()
     db.commit()
 
-    # 1. Users
+    # 1. Users (All 4 core roles with Argon2id encrypted passwords)
+    now = datetime.datetime.utcnow()
+    user_admin = User(
+        name="Alexandre Martin",
+        email="admin@qualisense.internal",
+        password_hash=hash_password("AdminPass@2026!"),
+        role="Administrator",
+        organisation="L’Oréal Global Quality & Operations",
+        avatar="AM",
+        is_active=True,
+        is_verified=True,
+        created_at=now,
+        updated_at=now
+    )
     user_quality = User(
         name="Dr. Sarah Chen",
         email="sarah.chen@qualisense-demo.internal",
+        password_hash=hash_password("QualityEng@2026!"),
         role="Quality Engineer",
-        avatar="SC"
+        organisation="Cosmetics Plant 04 (EMEA)",
+        avatar="SC",
+        is_active=True,
+        is_verified=True,
+        created_at=now,
+        updated_at=now
     )
     user_manager = User(
         name="Marc Dupont",
         email="marc.dupont@qualisense-demo.internal",
-        role="Plant Manager",
-        avatar="MD"
+        password_hash=hash_password("ProdMgr@2026!"),
+        role="Production Manager",
+        organisation="Cosmetics Plant 04 (EMEA)",
+        avatar="MD",
+        is_active=True,
+        is_verified=True,
+        created_at=now,
+        updated_at=now
     )
     user_operator = User(
         name="Elena Rossi",
         email="elena.rossi@qualisense-demo.internal",
-        role="Production Operator",
-        avatar="ER"
+        password_hash=hash_password("ViewerPass@2026!"),
+        role="Viewer",
+        organisation="Cosmetics Plant 04 (EMEA)",
+        avatar="ER",
+        is_active=True,
+        is_verified=True,
+        created_at=now,
+        updated_at=now
     )
-    db.add_all([user_quality, user_manager, user_operator])
+    db.add_all([user_admin, user_quality, user_manager, user_operator])
     db.flush()
 
     # 2. Product Profiles
