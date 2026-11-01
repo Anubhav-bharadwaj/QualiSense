@@ -27,3 +27,4 @@ echo ""
 # Trap Ctrl+C to kill both background processes
 trap "kill $BACKEND_PID $FRONTEND_PID 2>/dev/null; exit 0" SIGINT SIGTERM
 wait
+
